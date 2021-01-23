@@ -17,17 +17,28 @@ class User < ApplicationRecord
   has_many :followers, through: :reverses_of_relationship, source: :user
   
   def follow(other_user)
+    # unless self == other_userによってフォローしようとしているother_user が自分自身ではないかを検証している。
+    # 実行した User のインスタンスが self
     unless self == other_user
+    # 既にフォローされている場合にフォローが重複して保存されることがなくなる。
       self.relationships.find_or_create_by(follow_id: other_user.id)
     end
   end
 
   def unfollow(other_user)
     relationship = self.relationships.find_by(follow_id: other_user.id)
-    relationship.destroy if relationship
+    relationship.destroy if relationshipra
   end
 
   def following?(other_user)
+    # self.followings によりフォローしている User 達を取得。
+    # include?(other_user) によって other_user が含まれていないかを確認しています。含まれている場合には、true を返し、含まれていない場合には、false を返します。
     self.followings.include?(other_user)
   end
+  
+  def feed_microposts
+    # Micropost.where(user_id: フォローユーザ + 自分自身)
+    Micropost.where(user_id: self.following_ids + [self.id])
+  end
+
 end
