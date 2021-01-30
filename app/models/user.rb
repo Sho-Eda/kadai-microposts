@@ -32,25 +32,25 @@ class User < ApplicationRecord
   
   # -------
   
-  # フォローの関係を手軽に作成したり外したり出来るメソッド
+  # お気に入り係を手軽に作成したり外したり出来るメソッド
   
-  def like(other_user)
-    # unless self == other_userによってお気に入りしようとしているother_user が自分自身ではないかを検証している。
+  def like(micropost)
+    # unless self == micropostによってお気に入りしようとしているmicropost が自分自身ではないかを検証している。
     # 実行した User のインスタンスが self
-    unless self == other_user
+    unless self == micropost
     # 既にフォローされている場合にフォローが重複して保存されることがなくなる。
-      self.favorites.find_or_create_by(micropost_id: other_user.id)
+      self.favorites.find_or_create_by(micropost_id: micropost.id)
     end
   end
 
-  def unlike(other_user)
-    favorite = self.favorites.find_by(micropost_id: other_user.id)
+  def unlike(micropost)
+    favorite = self.favorites.find_by(micropost_id: micropost.id)
     favorite.destroy if favorite
   end
   
   
-  def like?(other_user) 
-    self.likes.include?(other_user) #self.bookmarksで登録しているお気に入りを取得。include?(other_user) によって other_user が含まれていないかを確認しています。
+  def like?(micropost) 
+    self.likes.include?(micropost) #self.bookmarksで登録しているお気に入りを取得。include?(other_user) によって other_user が含まれていないかを確認しています。
   end
     
   # ------
